@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Cuánto sabes de compras y ventas? | ¡Hablemos Más!</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,400;0,500;0,700;1,400;1,800&family=Montserrat:wght@900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#133153; --navy2:#002347; --pink:#e82f60; --gold:#d9912b; --sky:#809fcb;
+    --bg:#f3f4f8; --card:#ffffff; --line:#e3e5ec; --ink:#1f2a3a; --muted:#737373;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Fira Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+  body::before{content:"";position:fixed;left:0;top:0;bottom:0;width:8px;background:var(--gold)}
+  .wrap{max-width:640px;margin:0 auto;padding:22px 18px 50px}
+  .logo{text-align:center;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:22px}
+  .logo .name{font-family:"Fira Sans",sans-serif;font-weight:800;font-style:italic;font-size:2rem;color:var(--navy);line-height:1}
+  .logo .sub{font-size:.78rem;color:var(--sky);margin-top:3px;letter-spacing:.02em}
+  .kicker{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  h1{font-family:"Montserrat",sans-serif;font-weight:900;font-size:clamp(1.7rem,6vw,2.4rem);line-height:1.08;margin:8px 0 10px;color:var(--navy)}
+  h1 span{color:var(--pink)}
+  .hm{font-family:"Montserrat",sans-serif;font-weight:900;color:var(--navy);font-size:1.05rem}
+  p.lead{color:#4a5566;line-height:1.55}
+  .tag{display:inline-block;background:var(--pink);color:#fff;font-weight:700;font-size:.72rem;letter-spacing:.08em;padding:5px 12px;border-radius:999px;margin-bottom:12px}
+  .btn{border:0;cursor:pointer;font:inherit;font-weight:700;border-radius:12px;padding:15px 18px;font-size:1rem;transition:transform .08s, filter .15s}
+  .btn:active{transform:scale(.97)}
+  .btn:hover{filter:brightness(1.1)}
+  .primary{background:var(--pink);color:#fff;width:100%;margin-top:22px}
+  .ghost{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+  .rules{margin-top:20px;display:grid;gap:10px}
+  .rules div{background:var(--card);border-left:4px solid var(--navy);border-radius:10px;padding:12px 14px;font-size:.93rem;color:#4a5566;box-shadow:0 1px 3px rgba(19,49,83,.06)}
+  .rules b{color:var(--navy)}
+
+  .topbar{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:var(--navy);font-weight:600;margin-bottom:8px}
+  .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:20px}
+  .bar i{display:block;height:100%;width:0;background:var(--pink);transition:width .3s}
+  .card{background:var(--card);border-top:6px solid var(--pink);border-radius:16px;padding:28px 22px;text-align:center;box-shadow:0 4px 18px rgba(19,49,83,.08)}
+  .cat{font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);font-weight:700}
+  .word{font-family:"Montserrat",sans-serif;font-weight:900;color:var(--navy);font-size:clamp(1.5rem,6.5vw,2.2rem);margin:14px 0 6px;line-height:1.15}
+  .ask{color:var(--muted);margin-bottom:22px}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .yes{background:var(--navy);color:#fff}
+  .no{background:var(--pink);color:#fff}
+  .reveal{display:none;margin-top:4px}
+  .reveal .pt{font-size:1.15rem;font-weight:700;color:var(--navy);margin-bottom:12px}
+  .reveal .ex{background:var(--bg);border-left:4px solid var(--gold);text-align:left;padding:12px 14px;border-radius:8px;font-style:italic;color:#3a4556;line-height:1.5}
+  .reveal .note{margin-top:10px;font-size:.86rem;color:var(--muted);text-align:left}
+  .verdict{font-weight:700;margin-bottom:10px}
+  .next{width:100%;margin-top:18px;background:var(--navy);color:#fff}
+
+  .score{font-family:"Montserrat",sans-serif;font-weight:900;font-size:4.4rem;line-height:1;color:var(--pink)}
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:18px 0}
+  .stats div{background:var(--bg);border-radius:10px;padding:12px;color:var(--muted)}
+  .stats b{display:block;font-size:1.5rem}
+  .cats{margin:18px 0;text-align:left;display:grid;gap:10px}
+  .crow{font-size:.9rem}
+  .crow .lbl{display:flex;justify-content:space-between;margin-bottom:4px;color:var(--navy)}
+  .crow .mini{height:7px;background:var(--line);border-radius:99px;overflow:hidden}
+  .crow .mini i{display:block;height:100%;background:var(--navy)}
+  .review{text-align:left;margin-top:16px}
+  .review h3{font-size:1rem;margin-bottom:10px;color:var(--navy)}
+  .review ul{list-style:none;display:grid;gap:8px}
+  .review li{background:var(--bg);border-left:3px solid var(--pink);border-radius:8px;padding:10px 12px;font-size:.92rem;color:#3a4556}
+  .review li b{color:var(--navy)}
+  .actions{display:grid;gap:10px;margin-top:20px}
+  .copied{font-size:.85rem;color:var(--navy);min-height:1.2em;margin-top:6px}
+  .hidden{display:none}
+  .pdfbox{display:grid;gap:8px;text-align:left;background:var(--bg);border-radius:12px;padding:14px}
+  .pdfbox label{font-size:.85rem;color:var(--navy);font-weight:600}
+  .pdfbox input{font:inherit;padding:12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+  .pdfbox input:focus{outline:none;border-color:var(--navy)}
+  .foot{margin-top:26px;text-align:center;font-size:.8rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo"><div class="name">Adelante</div><div class="sub">Consultoria &amp; Inovação Educacional</div></div>
+
+  <!-- INICIO -->
+  <section id="start">
+    <div class="kicker">Comunidad · <span class="hm">¡HABLEMOS MÁS!</span></div>
+    <h1>¿Cuánto sabes de <span>compras, ventas</span> y descuentos?</h1>
+    <span class="tag">ESPECIAL BLACK FRIDAY</span>
+    <p class="lead">Vas a ver palabras y expresiones del mundo de las compras y las ventas. Para cada una, responde con sinceridad: <b>¿la conoces o no?</b> Al final, descubre qué porcentaje de este vocabulario ya dominas.</p>
+    <div class="rules">
+      <div>✅ <b>Sí, la conozco</b> — sabes qué significa y podrías usarla en una conversación.</div>
+      <div>❌ <b>No la conozco</b> — no la reconoces o no estás seguro/a. ¡No pasa nada!</div>
+      <div>💡 Después de cada respuesta, verás la traducción y un ejemplo para que compruebes si de verdad la conocías.</div>
+    </div>
+    <button class="btn primary" onclick="startGame(false)">¡Empezar! →</button>
+    <p class="foot" id="count"></p>
+  </section>
+
+  <!-- JUEGO -->
+  <section id="game" class="hidden">
+    <div class="topbar"><span id="progressTxt"></span><span id="liveScore"></span></div>
+    <div class="bar"><i id="progress"></i></div>
+    <div class="card">
+      <div class="cat" id="cat"></div>
+      <div class="word" id="word"></div>
+      <div id="askBox">
+        <p class="ask">¿Conoces esta palabra en el contexto de compras y ventas?</p>
+        <div class="choices">
+          <button class="btn yes" onclick="answer(true)">Sí, la conozco</button>
+          <button class="btn no" onclick="answer(false)">No la conozco</button>
+        </div>
+      </div>
+      <div class="reveal" id="reveal">
+        <div class="verdict" id="verdict"></div>
+        <div class="pt" id="pt"></div>
+        <div class="ex" id="ex"></div>
+        <div class="note" id="note"></div>
+        <button class="btn next" id="nextBtn" onclick="next()">Siguiente →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTADO -->
+  <section id="result" class="hidden">
+    <div class="kicker">Tu resultado</div>
+    <div class="card" style="margin-top:12px">
+      <div class="score" id="pct"></div>
+      <p style="color:var(--muted);margin-top:6px">del vocabulario de compras y ventas</p>
+      <h2 id="level" style="margin-top:16px;font-size:1.3rem;color:var(--navy)"></h2>
+      <p id="levelMsg" style="color:var(--muted);margin-top:8px;line-height:1.5"></p>
+      <div class="stats">
+        <div><b id="known" style="color:var(--navy)"></b>conocías</div>
+        <div><b id="unknown" style="color:var(--pink)"></b>para repasar</div>
+      </div>
+      <div class="cats" id="cats"></div>
+      <div class="review" id="review"></div>
+      <div class="actions">
+        <button class="btn primary" id="reviewBtn" onclick="startGame(true)" style="margin-top:0">Repasar solo las que no conocía</button>
+        <div id="pdfBox" class="pdfbox">
+          <label for="studentName">Tu nombre (aparece en el PDF)</label>
+          <input id="studentName" type="text" placeholder="Escribe tu nombre" maxlength="60">
+          <button class="btn ghost" id="pdfBtn" onclick="downloadPDF()">⬇ Descargar mi resultado en PDF</button>
+        </div>
+        <div class="copied" id="copied"></div>
+        <button class="btn ghost" onclick="startGame(false)">Jugar de nuevo (todas)</button>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot">adelante - consultoría de español · Comunidad ¡Hablemos Más!</p>
+</div>
+
+<script>
+const VOCAB = [
+  // ---- Quién vende y dónde ----
+  {c:"Quién vende y dónde", w:"el/la minorista", pt:"o/a varejista (venda ao consumidor final)", ex:"Los minoristas compran en grandes cantidades para revender en sus tiendas."},
+  {c:"Quién vende y dónde", w:"el/la mayorista", pt:"o/a atacadista", ex:"Este mayorista solo vende por cajas, no por unidad."},
+  {c:"Quién vende y dónde", w:"el proveedor / la proveedora", pt:"o fornecedor / a fornecedora", ex:"Tenemos que negociar mejores precios con el proveedor antes del Black Friday."},
+  {c:"Quién vende y dónde", w:"la tienda", pt:"a loja", ex:"La tienda abre a las seis de la mañana el día de las ofertas."},
+  {c:"Quién vende y dónde", w:"la bodega", pt:"o mercadinho / a venda do bairro", ex:"Voy a la bodega de la esquina a comprar pan.", n:"🇵🇪 ¡Ojo! En Perú «bodega» es la tiendita del barrio, no un depósito ni una adega."},
+  {c:"Quién vende y dónde", w:"el vendedor / la vendedora", pt:"o vendedor / a vendedora", ex:"El vendedor me explicó todas las ofertas de la semana."},
+  {c:"Quién vende y dónde", w:"el/la cliente", pt:"o/a cliente", ex:"El cliente siempre tiene la razón… ¿o no?", n:"💡 También existe «la clienta», muy usada en Perú."},
+  {c:"Quién vende y dónde", w:"el cajero / la cajera", pt:"o/a caixa (pessoa que recebe o pagamento)", ex:"La cajera me preguntó si quería boleta o factura."},
+
+  // ---- Pago y documentos ----
+  {c:"Quién vende y dónde", w:"el mostrador", pt:"o balcão", ex:"Deje sus compras en el mostrador, por favor."},
+  {c:"Quién vende y dónde", w:"la caja", pt:"o caixa (lugar onde se paga)", ex:"Hay mucha cola en la caja; mejor pago con el app."},
+  {c:"Quién vende y dónde", w:"la talla", pt:"o tamanho / número (de roupa)", ex:"¿Tiene este polo en talla M?", n:"🇵🇪 En Perú «polo» es la camiseta; para zapatos se dice «número» o «talla»."},
+  {c:"Pago y documentos", w:"el presupuesto", pt:"o orçamento (quanto se pode gastar)", ex:"Mi presupuesto para el Black Friday es de 500 soles."},
+  {c:"Pago y documentos", w:"la factura", pt:"a nota fiscal (para empresas)", ex:"Necesito factura con el RUC de mi empresa, por favor."},
+  {c:"Pago y documentos", w:"la boleta (de venta)", pt:"o cupom fiscal / nota ao consumidor", ex:"¿Le doy boleta o factura?", n:"🇵🇪 En Perú la boleta es para el consumidor final y la factura es para empresas (con RUC)."},
+  {c:"Pago y documentos", w:"al contado", pt:"à vista", ex:"Si pagas al contado, te hacemos un 10 % de descuento."},
+  {c:"Pago y documentos", w:"en efectivo", pt:"em dinheiro", ex:"¿Va a pagar en efectivo o con tarjeta?"},
+  {c:"Pago y documentos", w:"la tarjeta", pt:"o cartão", ex:"Aceptamos tarjeta de crédito y de débito."},
+  {c:"Pago y documentos", w:"la cuota", pt:"a parcela / prestação", ex:"Lo puedes pagar en doce cuotas sin intereses."},
+  {c:"Pago y documentos", w:"el vuelto", pt:"o troco", ex:"Disculpe, me dio mal el vuelto.", n:"🇵🇪 En Perú se dice «el vuelto»; en España, «el cambio»."},
+
+  // ---- Negocio ----
+  {c:"Negocio", w:"la venta al por menor / al menudeo", pt:"a venda no varejo", ex:"Nos dedicamos a la venta al por menor de ropa deportiva."},
+  {c:"Negocio", w:"la venta al por mayor", pt:"a venda no atacado", ex:"Si compras más de cien unidades, te damos precio de venta al por mayor."},
+  {c:"Negocio", w:"el margen de ganancia", pt:"a margem de lucro", ex:"Con tanto descuento, el margen de ganancia es muy pequeño."},
+  {c:"Negocio", w:"la competencia", pt:"a concorrência", ex:"La competencia lanzó sus ofertas una semana antes que nosotros.", n:"⚠️ Falso amigo: no es «competência» (habilidad), sino los concurrentes."},
+  {c:"Negocio", w:"las existencias / el stock", pt:"o estoque", ex:"Oferta válida hasta agotar stock."},
+
+  // ---- Black Friday y descuentos ----
+  {c:"Black Friday y descuentos", w:"la rebaja", pt:"a redução de preço / remarcação", ex:"Este abrigo tiene una rebaja del 40 %."},
+  {c:"Black Friday y descuentos", w:"la ganga", pt:"a pechincha / o achado", ex:"¡Estas zapatillas a ese precio son una ganga!"},
+  {c:"Black Friday y descuentos", w:"el remate", pt:"a queima de estoque", ex:"¡Gran remate! Todo a 10 soles.", n:"🇵🇪 Muy común en Perú, sobre todo en mercados y tiendas pequeñas."},
+  {c:"Black Friday y descuentos", w:"los saldos", pt:"as pontas de estoque / sobras", ex:"En esa tienda venden saldos de temporadas anteriores.", n:"⚠️ «Saldo» también es el saldo de una cuenta, pero en plural y en tiendas son productos sobrantes."},
+  {c:"Black Friday y descuentos", w:"el dos por uno (2x1)", pt:"o leve 2, pague 1", ex:"En el cine hay dos por uno los martes."},
+  {c:"Black Friday y descuentos", w:"agotado / agotada", pt:"esgotado / esgotada", ex:"Llegué tarde y el televisor ya estaba agotado."},
+  {c:"Black Friday y descuentos", w:"el carrito de compras", pt:"o carrinho de compras", ex:"Tengo tres cosas en el carrito, pero todavía no pago."},
+  {c:"Black Friday y descuentos", w:"el envío gratis", pt:"o frete grátis", ex:"Por compras mayores a 150 soles, el envío es gratis."},
+  {c:"Black Friday y descuentos", w:"el recojo en tienda", pt:"a retirada na loja", ex:"Si eliges recojo en tienda, no pagas envío.", n:"🇵🇪 En Perú se dice «recojo»; en otros países, «recogida» o «retiro»."},
+  {c:"Black Friday y descuentos", w:"hacer cola", pt:"fazer fila / pegar fila", ex:"Hicimos cola dos horas para entrar a la tienda."},
+  {c:"Black Friday y descuentos", w:"regatear", pt:"pechinchar", ex:"En el mercado siempre regateo un poquito."}
+];
+
+let deck=[], i=0, results=[], reviewMode=false;
+const $=id=>document.getElementById(id);
+$("count").textContent = VOCAB.length + " palabras y expresiones · 4 categorías";
+
+function shuffle(a){for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]];}return a;}
+
+function startGame(onlyUnknown){
+  reviewMode = onlyUnknown;
+  const base = onlyUnknown ? results.filter(r=>!r.k).map(r=>r.item) : VOCAB.slice();
+  deck = shuffle(base);
+  i=0; results=[];
+  show("game"); render();
+}
+function show(id){["start","game","result"].forEach(s=>$(s).classList.toggle("hidden",s!==id));window.scrollTo(0,0);}
+
+function render(){
+  const it=deck[i];
+  $("cat").textContent=it.c;
+  $("word").textContent=it.w;
+  $("progressTxt").textContent=(i+1)+" / "+deck.length;
+  $("progress").style.width=(i/deck.length*100)+"%";
+  const k=results.filter(r=>r.k).length;
+  $("liveScore").textContent="✅ "+k+"   ❌ "+(results.length-k);
+  $("askBox").style.display="block";
+  $("reveal").style.display="none";
+}
+function answer(knows){
+  const it=deck[i];
+  results.push({item:it,k:knows});
+  $("verdict").textContent = knows ? "✅ ¡Genial! ¿Era esto lo que pensabas?" : "📚 ¡Ahora ya la conoces!";
+  $("verdict").style.color = knows ? "var(--navy)" : "var(--pink)";
+  $("pt").textContent="🇧🇷 "+it.pt;
+  $("ex").textContent="«"+it.ex+"»";
+  $("note").textContent=it.n||"";
+  $("nextBtn").textContent = i===deck.length-1 ? "Ver mi resultado →" : "Siguiente →";
+  $("askBox").style.display="none";
+  $("reveal").style.display="block";
+}
+function next(){ i++; if(i>=deck.length) finish(); else render(); }
+
+function finish(){
+  const total=results.length, k=results.filter(r=>r.k).length, pct=Math.round(k/total*100);
+  $("pct").textContent=pct+"%";
+  $("known").textContent=k; $("unknown").textContent=total-k;
+  let lv,msg;
+  if(pct>=90){lv="🏆 ¡Experto/a en ventas!";msg="Dominas este vocabulario. Ya puedes negociar, comparar precios y cazar ofertas en español sin problema.";}
+  else if(pct>=70){lv="🛍️ ¡Comprador/a experto/a!";msg="Conoces la mayoría de las palabras. Repasa las que te faltan y estarás listo/a para cualquier conversación de negocios.";}
+  else if(pct>=40){lv="🛒 Vas por buen camino";msg="Ya tienes una buena base. Repasa la lista de abajo e intenta usar estas palabras en nuestro próximo encuentro.";}
+  else {lv="🌱 ¡Gran oportunidad para aprender!";msg="Este tema tiene mucho vocabulario nuevo para ti. Repasa las palabras con calma: ¡en poco tiempo las vas a usar con naturalidad!";}
+  if(reviewMode){lv="🔁 Repaso: "+lv.replace(/^\S+\s/,"");}
+  $("level").textContent=lv; $("levelMsg").textContent=msg;
+
+  const cats={};
+  results.forEach(r=>{cats[r.item.c]=cats[r.item.c]||{t:0,k:0};cats[r.item.c].t++;if(r.k)cats[r.item.c].k++;});
+  $("cats").innerHTML=Object.entries(cats).map(([c,v])=>{const p=Math.round(v.k/v.t*100);
+    return `<div class="crow"><div class="lbl"><span>${c}</span><span>${v.k}/${v.t}</span></div><div class="mini"><i style="width:${p}%"></i></div></div>`;}).join("");
+
+  const miss=results.filter(r=>!r.k);
+  $("review").innerHTML = miss.length
+    ? `<h3>📌 Palabras para repasar</h3><ul>${miss.map(r=>`<li><b>${r.item.w}</b> — ${r.item.pt}</li>`).join("")}</ul>`
+    : `<h3>🎉 ¡No tienes palabras pendientes!</h3>`;
+  $("reviewBtn").style.display = miss.length ? "block" : "none";
+  $("copied").textContent="";
+  show("result");
+}
+
+function pdfText(t){
+  return String(t).replace(/…/g,"...").replace(/[–—]/g,"-").replace(/[“”]/g,'"').replace(/[‘’]/g,"'")
+    .replace(/[^\u0000-ÿ]/g,"").replace(/\s+/g," ").trim();
+}
+function buildPDF(JsPDF, data){
+  const doc=new JsPDF({unit:"mm",format:"a4"});
+  const W=210,H=297,M=20,CW=W-2*M;
+  const NAVY=[19,49,83],PINK=[232,47,96],GOLD=[217,145,43],SKY=[128,159,203],GRAY=[115,115,115],BG=[243,244,248],LINE=[227,229,236];
+  let y=0;
+  const deco=()=>{
+    doc.setFillColor(...GOLD);doc.rect(0,0,4,H,"F");
+    doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(...GRAY);
+    doc.text("adelante - consultoría de español  ·  Comunidad ¡Hablemos Más!",W/2,H-10,{align:"center"});
+  };
+  const ensure=h=>{ if(y+h>H-20){doc.addPage();deco();y=20;} };
+  deco();
+  // logo
+  doc.setFont("helvetica","bolditalic");doc.setFontSize(24);doc.setTextColor(...NAVY);
+  doc.text("Adelante",W/2,22,{align:"center"});
+  doc.setFont("helvetica","normal");doc.setFontSize(9);doc.setTextColor(...SKY);
+  doc.text("Consultoria & Inovação Educacional",W/2,28,{align:"center"});
+  doc.setDrawColor(...LINE);doc.setLineWidth(.3);doc.line(M,33,W-M,33);
+  y=43;
+  doc.setFont("helvetica","bold");doc.setFontSize(8.5);doc.setTextColor(...GOLD);
+  doc.text("COMUNIDAD  ·  ¡HABLEMOS MÁS!  ·  ESPECIAL BLACK FRIDAY",M,y);
+  y+=8;doc.setFontSize(17);doc.setTextColor(...NAVY);
+  doc.text("Vocabulario de compras, ventas y descuentos",M,y);
+  y+=7;doc.setFont("helvetica","normal");doc.setFontSize(10);doc.setTextColor(...GRAY);
+  doc.text(pdfText((data.name?data.name+"  ·  ":"")+data.date+(data.review?"  ·  Repaso":"")),M,y);
+  // score box
+  y+=7;doc.setFillColor(...BG);doc.roundedRect(M,y,CW,34,3,3,"F");
+  doc.setFillColor(...PINK);doc.rect(M,y,CW,1.6,"F");
+  doc.setFont("helvetica","bold");doc.setFontSize(34);doc.setTextColor(...PINK);
+  doc.text(data.pct+"%",M+8,y+22);
+  doc.setFontSize(13);doc.setTextColor(...NAVY);
+  doc.text(pdfText(data.level),M+52,y+13);
+  doc.setFont("helvetica","normal");doc.setFontSize(9.5);doc.setTextColor(60,69,86);
+  doc.text(doc.splitTextToSize(pdfText(data.msg),CW-60),M+52,y+19);
+  doc.setFontSize(9);doc.setTextColor(...GRAY);
+  doc.text("Conocías "+data.known+" de "+data.total,M+8,y+29);
+  y+=44;
+  // categories
+  doc.setFont("helvetica","bold");doc.setFontSize(12);doc.setTextColor(...NAVY);
+  doc.text("Resultado por categoría",M,y);y+=6;
+  data.cats.forEach(c=>{
+    doc.setFont("helvetica","normal");doc.setFontSize(9.5);doc.setTextColor(...NAVY);
+    doc.text(pdfText(c.name),M,y);doc.text(c.k+"/"+c.t,W-M,y,{align:"right"});
+    y+=2;doc.setFillColor(...LINE);doc.roundedRect(M,y,CW,2.2,1,1,"F");
+    if(c.k>0){doc.setFillColor(...NAVY);doc.roundedRect(M,y,CW*c.k/c.t,2.2,1,1,"F");}
+    y+=7;
+  });
+  // words to review
+  y+=3;ensure(16);
+  doc.setFont("helvetica","bold");doc.setFontSize(12);doc.setTextColor(...NAVY);
+  doc.text(data.miss.length?"Palabras para repasar ("+data.miss.length+")":"¡No tienes palabras para repasar!",M,y);
+  y+=3;doc.setFillColor(...PINK);doc.rect(M,y,30,.8,"F");y+=6;
+  data.miss.forEach(it=>{
+    const ex=doc.splitTextToSize(pdfText("«"+it.ex+"»"),CW-8);
+    const note=it.n?doc.splitTextToSize(pdfText(it.n),CW-8):[];
+    const h=9+ex.length*4.4+note.length*4.2;
+    ensure(h);
+    doc.setFillColor(...BG);doc.rect(M,y-4,CW,h,"F");
+    doc.setFillColor(...PINK);doc.rect(M,y-4,1.2,h,"F");
+    doc.setFont("helvetica","bold");doc.setFontSize(11);doc.setTextColor(...NAVY);
+    doc.text(pdfText(it.w),M+5,y+1.5);
+    const ww=doc.getTextWidth(pdfText(it.w));
+    doc.setFont("helvetica","normal");doc.setFontSize(10);doc.setTextColor(...GRAY);
+    doc.text("  -  "+pdfText(it.pt),M+5+ww,y+1.5);
+    let yy=y+7;
+    doc.setFont("helvetica","italic");doc.setFontSize(9.5);doc.setTextColor(60,69,86);
+    doc.text(ex,M+5,yy);yy+=ex.length*4.4;
+    if(note.length){doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor(...GOLD);doc.text(note,M+5,yy);}
+    y+=h+3;
+  });
+  // known words
+  if(data.knownList.length){
+    y+=3;ensure(16);
+    doc.setFont("helvetica","bold");doc.setFontSize(12);doc.setTextColor(...NAVY);
+    doc.text("Palabras que ya conoces ("+data.knownList.length+")",M,y);
+    y+=3;doc.setFillColor(...NAVY);doc.rect(M,y,30,.8,"F");y+=6;
+    doc.setFont("helvetica","normal");doc.setFontSize(9.5);
+    data.knownList.forEach(it=>{
+      ensure(6);
+      doc.setTextColor(...NAVY);doc.setFont("helvetica","bold");doc.text(pdfText(it.w),M+2,y);
+      const ww=doc.getTextWidth(pdfText(it.w));
+      doc.setFont("helvetica","normal");doc.setTextColor(...GRAY);doc.text("  -  "+pdfText(it.pt),M+2+ww,y);
+      y+=5.6;
+    });
+  }
+  return doc;
+}
+async function downloadPDF(){
+  const msg=$("copied");
+  if(!window.jspdf){msg.textContent="No se pudo generar el PDF en este momento.";return;}
+  let dl=null;
+  try{ dl = window.claude ? await claude.use("downloads") : null; }catch(e){ dl=null; }
+  const total=results.length,k=results.filter(r=>r.k).length;
+  const cats={};
+  results.forEach(r=>{cats[r.item.c]=cats[r.item.c]||{name:r.item.c,t:0,k:0};cats[r.item.c].t++;if(r.k)cats[r.item.c].k++;});
+  const name=$("studentName").value.trim();
+  const data={
+    name, date:new Date().toLocaleDateString("es-PE"), review:reviewMode,
+    pct:Math.round(k/total*100), known:k, total,
+    level:$("level").textContent, msg:$("levelMsg").textContent,
+    cats:Object.values(cats),
+    miss:results.filter(r=>!r.k).map(r=>r.item),
+    knownList:results.filter(r=>r.k).map(r=>r.item)
+  };
+  const doc=buildPDF(window.jspdf.jsPDF,data);
+  const slug=(name||"resultado").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-zA-Z0-9]+/g,"-").replace(/^-|-$/g,"").toLowerCase()||"resultado";
+  const fname="hablemos-mas-compras-ventas-"+slug+".pdf";
+  if(!dl){ try{ doc.save(fname); msg.textContent="¡Listo! Tu PDF fue descargado."; }catch(e){ msg.textContent="No se pudo descargar el PDF."; } return; }
+  try{
+    await dl.save({filename:fname, data:doc.output("blob")});
+    msg.textContent="¡Listo! Tu PDF fue descargado.";
+  }catch(e){
+    msg.textContent = e && e.code==="declined" ? "Descarga cancelada." : "No se pudo descargar el PDF. Inténtalo de nuevo.";
+  }
+}
+
+</script>
+</body>
+</html>
